@@ -3,3 +3,4 @@ debug_loaded.txt
 *.iml
 .idea/
 *.class
+*.jar
