@@ -1,8 +1,7 @@
-﻿VERSION: "0.1",
+VERSION: "0.1",
 GAME_VERSION_MAJOR: 71,
 GAME_VERSION_MINOR: 0,
 NAME: "Syxian Banking",
 DESC: "Banking and financial systems for Songs of Syx.",
 AUTHOR: "Dahaka",
 INFO: "",
-
