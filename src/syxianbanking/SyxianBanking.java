@@ -73,6 +73,7 @@ public final class SyxianBanking implements SCRIPT {
 
     @Override
     public SCRIPT_INSTANCE createInstance() {
+        RATES.resetForNewContext();
         return new Instance();
     }
 
@@ -184,6 +185,7 @@ public final class SyxianBanking implements SCRIPT {
 
         @Override
         public boolean handleBrokenSavedState() {
+            RATES.resetForNewContext();
             return true;
         }
 
@@ -432,6 +434,35 @@ public final class SyxianBanking implements SCRIPT {
         private final double[][] loanHistoryDiscounts = new double[MAX_LOANS][MAX_LOAN_HISTORY];
         private final double[][] loanHistoryBalances = new double[MAX_LOANS][MAX_LOAN_HISTORY];
 
+        void resetForNewContext() {
+            day = Integer.MIN_VALUE;
+            kingdoms = 0;
+            averageWealth = 0;
+            totalEconomicWeight = 0;
+            averagePurchasingPower = 0;
+            economicDispersion = 0;
+            negativeStress = 0;
+            positiveStrength = 0;
+            playerTreasury = 0;
+            playerNetWorth = 0;
+            maxLoanAvailable = 0;
+            latePenaltyRate = 0;
+            currentSavingsRate = 0;
+            currentLoanRate = 0;
+            targetSavingsRate = 0;
+            targetLoanRate = 0;
+            initialized = false;
+            historyInitialized = false;
+            historySamples = 0;
+            maxLoanInstallments = 0;
+            error = null;
+            clearHistory(savingsHistory);
+            clearHistory(loanHistory);
+            clearHistory(latePenaltyHistory);
+            clearHistory(bankBalanceHistory);
+            resetBankSaveState();
+        }
+
         void updateIfNeeded() {
             int currentDay = TIME.days().bitsSinceStart();
             if (currentDay == day) {
@@ -626,6 +657,12 @@ public final class SyxianBanking implements SCRIPT {
             selectedLoan = -1;
             for (int i = 0; i < MAX_LOANS; i++) {
                 clearLoan(i);
+            }
+        }
+
+        private void clearHistory(double[] history) {
+            for (int i = 0; i < history.length; i++) {
+                history[i] = 0;
             }
         }
 

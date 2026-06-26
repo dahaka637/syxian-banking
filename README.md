@@ -19,4 +19,4 @@ Interest rates are dynamic, calculated from the world economy — NPC kingdom we
 ## Compatibility
 
 - Songs of Syx **v71**
-- Mod version: **0.1**
+- Mod version: **0.1.1**
