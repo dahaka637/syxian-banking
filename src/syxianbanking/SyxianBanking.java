@@ -10,7 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import game.faction.FCredits;
+import game.boosting.BOOSTABLES;
+import game.boosting.Boostable;
 import game.faction.FACTIONS;
 import game.faction.FCredits.CTYPE;
 import game.faction.npc.FactionNPC;
@@ -162,10 +163,12 @@ public final class SyxianBanking implements SCRIPT {
     public static final class Instance implements SCRIPT_INSTANCE {
         private static IManager installedManager;
         private static BankingView bankingView;
+        private static boolean inflationSuppressed = false;
 
         @Override
         public void update(double ds) {
             install();
+            suppressInflation();
             RATES.updateIfNeeded();
         }
 
@@ -291,6 +294,20 @@ public final class SyxianBanking implements SCRIPT {
             }
         }
 
+        // DEFALTION is the anti-inflation divisor: higher = less inflation.
+        // 0 caused division-by-zero (2.15B bug), so we push it to 9999 instead.
+        private static void suppressInflation() {
+            if (inflationSuppressed) return;
+            try {
+                Boostable defaltion = BOOSTABLES.CIVICS().DEFALTION;
+                Field f = Boostable.class.getDeclaredField("baseValue");
+                f.setAccessible(true);
+                f.setDouble(defaltion, 9999.0);
+                inflationSuppressed = true;
+            } catch (Throwable e) {
+                writeDebug("suppressInflation failed: " + e.getClass().getName() + " - " + e.getMessage());
+            }
+        }
     }
 
     private static final class BankingView extends IFullView {
@@ -341,16 +358,6 @@ public final class SyxianBanking implements SCRIPT {
     }
 
     private static final class BankRates {
-        private static final Field F_INFLATION;
-        static {
-            Field f = null;
-            try {
-                f = FCredits.class.getDeclaredField("INFLATION");
-                f.setAccessible(true);
-            } catch (Throwable ignored) {}
-            F_INFLATION = f;
-        }
-
         private static final int SAVE_MARK = 0x53584235;
         private static final int MAX_OPERATIONS = 100;
         private static final int MAX_LOANS = 16;
@@ -521,7 +528,6 @@ public final class SyxianBanking implements SCRIPT {
                 processDailyLoans();
                 refreshLoanCapacity();
                 pushHistory();
-                counterInflation();
 
                 error = null;
             } catch (Throwable e) {
@@ -532,16 +538,6 @@ public final class SyxianBanking implements SCRIPT {
         private double economicWeight(double wealthFactor) {
             double safeFactor = Math.max(wealthFactor, 0.0);
             return Math.max(0.0, Math.log(safeFactor + 1.0) / Math.log(2.0));
-        }
-
-        private void counterInflation() {
-            if (F_INFLATION == null) return;
-            try {
-                double todayInflation = F_INFLATION.getDouble(FACTIONS.player().credits());
-                if (Math.abs(todayInflation) > 0.001) {
-                    FACTIONS.player().credits().inc(-todayInflation, CTYPE.INFLATION);
-                }
-            } catch (Throwable ignored) {}
         }
 
         void save(FilePutter file) {
