@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import game.boosting.BOOSTABLES;
+import game.boosting.Boostable;
 import game.faction.FACTIONS;
 import game.faction.FCredits.CTYPE;
 import game.faction.npc.FactionNPC;
@@ -161,10 +163,12 @@ public final class SyxianBanking implements SCRIPT {
     public static final class Instance implements SCRIPT_INSTANCE {
         private static IManager installedManager;
         private static BankingView bankingView;
+        private static boolean inflationZeroed = false;
 
         @Override
         public void update(double ds) {
             install();
+            zeroInflation();
             RATES.updateIfNeeded();
         }
 
@@ -287,6 +291,19 @@ public final class SyxianBanking implements SCRIPT {
                 return field.get(manager) == view;
             } catch (ReflectiveOperationException e) {
                 return false;
+            }
+        }
+
+        private static void zeroInflation() {
+            if (inflationZeroed) return;
+            try {
+                Boostable defaltion = BOOSTABLES.CIVICS().DEFALTION;
+                Field f = Boostable.class.getDeclaredField("baseValue");
+                f.setAccessible(true);
+                f.setDouble(defaltion, 0.0);
+                inflationZeroed = true;
+            } catch (Throwable e) {
+                writeDebug("zeroInflation failed: " + e.getClass().getName() + " - " + e.getMessage());
             }
         }
     }
