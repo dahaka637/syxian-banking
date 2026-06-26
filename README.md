@@ -1,22 +1,22 @@
 # Syxian Banking
 
-Mod simples para [Songs of Syx](https://store.steampowered.com/app/1358140/Songs_of_Syx/) que adiciona uma aba de banco na interface de gerenciamento do assentamento.
+A simple banking system mod for [Songs of Syx](https://store.steampowered.com/app/1358140/Songs_of_Syx/) that adds a bank tab to the settlement management interface.
 
-## O que faz
+## What it does
 
-- Depositar e sacar denaris em uma poupança
-- Contratar empréstimos com parcelas diárias automáticas
-- Pré-pagar empréstimos com desconto nos juros restantes
-- Ver histórico de operações e gráficos das taxas dos últimos dias
+- Deposit and withdraw denars into a savings account
+- Take loans with automatic daily installments
+- Prepay loans early with an interest discount
+- View operation history and rate charts for the last few days
 
-As taxas de juros são dinâmicas e calculadas com base na economia do mundo — riqueza dos reinos NPC, estresse econômico e desigualdade entre facções.
+Interest rates are dynamic, calculated from the world economy — NPC kingdom wealth, economic stress and disparity between factions.
 
-## Instalação
+## Installation
 
-1. Copie a pasta `Syxian Banking` para `%APPDATA%\songsofsyx\mods\`
-2. Ative o mod no launcher do jogo
+1. Copy the `Syxian Banking` folder to `%APPDATA%\songsofsyx\mods\`
+2. Enable the mod in the game launcher
 
-## Compatibilidade
+## Compatibility
 
 - Songs of Syx **v71**
 - Mod version: **0.1**
