@@ -50,7 +50,3 @@ Supported languages: Czech, German, English, Spanish, French, Hungarian, Italian
 
 - Game version: **v71**
 - Mod version: **0.1**
-
-## Author
-
-**hw223**
