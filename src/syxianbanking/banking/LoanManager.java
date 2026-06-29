@@ -28,7 +28,7 @@ import syxianbanking.domain.Loan;
  *   to the remaining interest portion. EARLY_PAYMENT_DISCOUNT_FACTOR controls generosity.
  *
  * Credit capacity:
- *   Available credit = playerNetWorth * creditRatio - activeLoanDebt.
+ *   Available credit = (net worth + bank savings collateral) * creditRatio - weighted active debt.
  *   Both creditRatio and maxLoanInstallments vary with the economic snapshot from RateCalculator.
  */
 public final class LoanManager {
@@ -45,6 +45,7 @@ public final class LoanManager {
     public double maxLoanAvailable;    // max gold available to borrow right now
     public int    maxLoanInstallments; // max term allowed in installments
     public double playerNetWorth;      // player net worth cache
+    public double savingsCollateral;    // bank savings balance considered in credit capacity
 
     // Daily settlement output
     public double latePenaltyRate;
@@ -67,6 +68,7 @@ public final class LoanManager {
         maxLoanAvailable   = 0;
         maxLoanInstallments = 0;
         playerNetWorth     = 0;
+        savingsCollateral  = 0;
         latePenaltyRate    = 0;
         for (int i = 0; i < BankConstants.MAX_LOANS; i++) loans[i].clear();
         clearHistory();
@@ -76,12 +78,20 @@ public final class LoanManager {
 
     public int availableLoanAmount() {
         refreshCapacity();
-        return Sanitize.positiveFloor(maxLoanAvailable);
+        return roundedLoanOffer(maxLoanAvailable);
     }
 
     public int maxInstallmentsAllowed() {
         refreshCapacity();
-        return Math.max(1, maxLoanInstallments);
+        return Math.max(BankConstants.MIN_LOAN_TERM, maxLoanInstallments);
+    }
+
+    public int clampInstallments(int installments) {
+        return CLAMP.i(installments, BankConstants.MIN_LOAN_TERM, maxInstallmentsAllowed());
+    }
+
+    public void syncSavingsCollateral(SavingsAccount savings) {
+        savingsCollateral = Math.max(0.0, Sanitize.money(savings.balance));
     }
 
     /** Max the player can pay early on a loan, bounded by treasury and the settlement amount. */
@@ -102,10 +112,11 @@ public final class LoanManager {
      *   Term premium   — square-root growth with installments; longer terms cost moderately more.
      */
     public void contractLoan(int amount, int installments, SavingsAccount savings) {
+        syncSavingsCollateral(savings);
         refreshCapacity();
         if (loanCount >= BankConstants.MAX_LOANS) return;
         amount       = Math.min(amount, availableLoanAmount());
-        installments = CLAMP.i(installments, 1, maxInstallmentsAllowed());
+        installments = clampInstallments(installments);
         if (amount <= 0 || installments <= 0) return;
 
         double worth      = Math.max(playerNetWorth, 1.0);
@@ -128,9 +139,12 @@ public final class LoanManager {
         loan.contractedInstallment = inst;
         loan.currentInstallment    = inst;
         loan.penaltyRate           = calc.contractedPenaltyRate();
+        loan.penaltyCapped         = false;
         loan.principalRemaining    = amount;
         loan.debtRemaining         = Math.max(0.0, Sanitize.money(debt));
         loan.historyCount          = 0;
+        loan.clearDebtHistory();
+        recordDebtHistory(loan);
         loanCount++;
 
         FACTIONS.player().credits().inc(amount, CTYPE.MISC);
@@ -167,6 +181,7 @@ public final class LoanManager {
         loans[loanIdx].principalRemaining = Math.max(0.0, Sanitize.money(preview.newPrincipal));
         recalculateLoanInstallment(loanIdx);
         recordLoanHistory(loanIdx, Loan.OP_EARLY, paid, preview.discount, loans[loanIdx].debtRemaining);
+        recordDebtHistory(loans[loanIdx]);
         refreshCapacity();
     }
 
@@ -179,11 +194,13 @@ public final class LoanManager {
 
     public double previewLoanFinalRate(int amount, int installments) {
         if (amount <= 0 || installments <= 0) return 0;
+        installments = clampInstallments(installments);
         return finalLoanRate(amount, installments, Math.max(playerNetWorth, 1.0));
     }
 
     public double previewLoanInstallment(int amount, int installments) {
         if (amount <= 0 || installments <= 0) return 0;
+        installments = clampInstallments(installments);
         double daysPerYear = Math.max(1.0, TIME.years().bitConversion(TIME.days()));
         double finalRate   = previewLoanFinalRate(amount, installments);
         double periodRate  = Math.pow(1.0 + finalRate / 100.0, 1.0 / daysPerYear) - 1.0;
@@ -192,6 +209,7 @@ public final class LoanManager {
 
     public double previewLoanTotalDue(int amount, int installments) {
         if (amount <= 0 || installments <= 0) return 0;
+        installments = clampInstallments(installments);
         return Math.max(amount, previewLoanInstallment(amount, installments) * installments);
     }
 
@@ -264,17 +282,40 @@ public final class LoanManager {
         if (!Double.isFinite(creditRatioRaw)) creditRatioRaw = BankConstants.MIN_CREDIT_RATIO;
         double creditRatio = CLAMP.d(creditRatioRaw, BankConstants.MIN_CREDIT_RATIO, BankConstants.MAX_CREDIT_RATIO);
 
-        maxLoanAvailable = Math.max(0.0, Sanitize.money(playerNetWorth * creditRatio - outstanding));
+        double creditBase = Math.max(0.0, Sanitize.money(playerNetWorth
+                + savingsCollateral * BankConstants.SAVINGS_CREDIT_COLLATERAL_WEIGHT));
+        double debtBurden = outstanding * (1.0 + BankConstants.ACTIVE_DEBT_EXTRA_BURDEN_WEIGHT);
+        maxLoanAvailable = Math.max(0.0, Sanitize.money(creditBase * creditRatio - debtBurden));
 
         // High leverage (large debt relative to net worth) reduces available term.
-        double leverage = playerNetWorth <= 0 ? 1.0 : outstanding / playerNetWorth;
-        int terms = (int) Math.round(BankConstants.BASE_LOAN_TERM
-                + calc.positiveStrength   * BankConstants.TERM_STRENGTH_WEIGHT
-                - calc.negativeStress     * BankConstants.TERM_STRESS_WEIGHT
-                - calc.economicDispersion * BankConstants.TERM_DISPERSION_WEIGHT
-                - calc.currentLoanRate    * BankConstants.TERM_RATE_WEIGHT
-                - leverage                * BankConstants.TERM_LEVERAGE_WEIGHT);
-        maxLoanInstallments = CLAMP.i(terms, BankConstants.MIN_LOAN_TERM, BankConstants.MAX_LOAN_TERM);
+        double leverage = creditBase <= 0 ? 1.0 : debtBurden / creditBase;
+        double termRaw = BankConstants.TERM_BASE_OFFSET
+                + creditRatio              * BankConstants.TERM_CREDIT_RATIO_WEIGHT
+                + calc.positiveStrength    * BankConstants.TERM_STRENGTH_WEIGHT
+                - calc.negativeStress      * BankConstants.TERM_STRESS_WEIGHT
+                - calc.economicDispersion  * BankConstants.TERM_DISPERSION_WEIGHT
+                - calc.currentLoanRate     * BankConstants.TERM_RATE_WEIGHT
+                - leverage                 * BankConstants.TERM_LEVERAGE_WEIGHT;
+        double floorRaw = BankConstants.TERM_FLOOR_BASE
+                + creditRatio           * BankConstants.TERM_FLOOR_CREDIT_RATIO_WEIGHT
+                + calc.positiveStrength * BankConstants.TERM_FLOOR_STRENGTH_WEIGHT
+                - calc.negativeStress   * BankConstants.TERM_FLOOR_STRESS_WEIGHT
+                - calc.currentLoanRate  * BankConstants.TERM_FLOOR_RATE_WEIGHT
+                - leverage              * BankConstants.TERM_FLOOR_LEVERAGE_WEIGHT;
+        double ceilingRaw = BankConstants.TERM_CEILING_BASE
+                + creditRatio              * BankConstants.TERM_CEILING_CREDIT_RATIO_WEIGHT
+                + calc.positiveStrength    * BankConstants.TERM_CEILING_STRENGTH_WEIGHT
+                - calc.negativeStress      * BankConstants.TERM_CEILING_STRESS_WEIGHT
+                - calc.economicDispersion  * BankConstants.TERM_CEILING_DISPERSION_WEIGHT
+                - calc.currentLoanRate     * BankConstants.TERM_CEILING_RATE_WEIGHT
+                - leverage                 * BankConstants.TERM_CEILING_LEVERAGE_WEIGHT;
+
+        int dynamicFloor = evenClamp(floorRaw, BankConstants.MIN_LOAN_TERM, BankConstants.TERM_FLOOR_MAX);
+        int creditScaleBonus = (int) Math.floor(maxLoanAvailable / BankConstants.TERM_CREDIT_PER_EXTRA_INSTALLMENT);
+        int dynamicCeiling = evenClamp(ceilingRaw + creditScaleBonus,
+                BankConstants.TERM_CEILING_MIN, BankConstants.MAX_LOAN_TERM);
+        if (dynamicCeiling < dynamicFloor) dynamicCeiling = dynamicFloor;
+        maxLoanInstallments = evenClamp(termRaw + creditScaleBonus, dynamicFloor, dynamicCeiling);
     }
 
     // ---- Post-load normalization ----
@@ -343,12 +384,7 @@ public final class LoanManager {
             recordLoanHistory(loanIdx, Loan.OP_PAYMENT, paid, 0, loan.debtRemaining);
         } else {
             if (paid > 0) recordLoanHistory(loanIdx, Loan.OP_PARTIAL, paid, 0, loan.debtRemaining);
-            loan.penaltyRate = Sanitize.rate(loan.penaltyRate, BankConstants.MAX_DAILY_PENALTY_RATE);
-            double penalty = Sanitize.money(loan.debtRemaining * (loan.penaltyRate / 100.0));
-            if (penalty > 0) {
-                loan.debtRemaining = Math.max(0.0, Sanitize.money(loan.debtRemaining + penalty));
-                recordLoanHistory(loanIdx, Loan.OP_PENALTY, penalty, 0, loan.debtRemaining);
-            }
+            applyLatePenalty(loanIdx);
         }
 
         if (loan.debtRemaining <= BankConstants.SETTLED_DEBT_EPSILON
@@ -357,6 +393,57 @@ public final class LoanManager {
             return;
         }
         recalculateLoanInstallment(loanIdx);
+        recordDebtHistory(loan);
+    }
+
+    private void applyLatePenalty(int loanIdx) {
+        Loan loan = loans[loanIdx];
+        if (loan.penaltyCapped) return;
+
+        double capDebt = penaltyCapDebt(loan);
+        if (capDebt <= 0) return;
+
+        if (loan.debtRemaining >= capDebt - BankConstants.PAYMENT_EPSILON) {
+            capLoanPenalty(loanIdx, capDebt);
+            return;
+        }
+
+        loan.penaltyRate = Sanitize.rate(loan.penaltyRate, BankConstants.MAX_DAILY_PENALTY_RATE);
+        double penalty = Sanitize.money(loan.debtRemaining * (loan.penaltyRate / 100.0));
+        if (penalty <= 0) return;
+
+        double allowedPenalty = Math.max(0.0, Sanitize.money(capDebt - loan.debtRemaining));
+        double appliedPenalty = Math.min(penalty, allowedPenalty);
+        if (appliedPenalty > 0) {
+            loan.debtRemaining = Math.max(0.0, Sanitize.money(loan.debtRemaining + appliedPenalty));
+            recordLoanHistory(loanIdx, Loan.OP_PENALTY, appliedPenalty, 0, loan.debtRemaining);
+        }
+
+        if (penalty > appliedPenalty + BankConstants.PAYMENT_EPSILON
+                || loan.debtRemaining >= capDebt - BankConstants.PAYMENT_EPSILON) {
+            capLoanPenalty(loanIdx, capDebt);
+        }
+    }
+
+    private void capLoanPenalty(int loanIdx, double capDebt) {
+        Loan loan = loans[loanIdx];
+        if (loan.penaltyCapped) return;
+
+        double before = loan.debtRemaining;
+        loan.debtRemaining = Math.max(0.0, Sanitize.money(Math.min(before, capDebt)));
+        loan.penaltyRate = 0;
+        loan.penaltyCapped = true;
+
+        double waivedPenalty = Math.max(0.0, Sanitize.money(before - loan.debtRemaining));
+        recordLoanHistory(loanIdx, Loan.OP_CAP, waivedPenalty, 0, loan.debtRemaining);
+    }
+
+    private double penaltyCapDebt(Loan loan) {
+        double contractedDebt = Math.max(
+                loan.originalPrincipal,
+                loan.contractedInstallment * Math.max(1, loan.installmentsContracted));
+        contractedDebt = Math.max(0.0, Sanitize.money(contractedDebt));
+        return Sanitize.money(contractedDebt * BankConstants.PENALTY_CAP_DEBT_MULTIPLIER);
     }
 
     // Pays accrued interest first; the remainder reduces principal.
@@ -422,6 +509,10 @@ public final class LoanManager {
         if (loan.historyCount < Loan.MAX_HISTORY) loan.historyCount++;
     }
 
+    private void recordDebtHistory(Loan loan) {
+        loan.recordDebtHistory(TIME.days().bitsSinceStart(), Math.max(0.0, Sanitize.money(loan.debtRemaining)));
+    }
+
     // Compacts the array by shifting slots after loanIdx down by one, then adjusts selectedLoan.
     private void removeLoan(int loanIdx) {
         if (!loanValid(loanIdx)) return;
@@ -456,6 +547,27 @@ public final class LoanManager {
         return Math.max(0.0, Sanitize.money(debt));
     }
 
+    private int roundedLoanOffer(double value) {
+        int amount = Sanitize.positiveFloor(value);
+        if (amount <= 0) return 0;
+
+        int step = BankConstants.LOAN_OFFER_MIN_ROUNDING_STEP;
+        while (amount / step >= 100) step *= 10;
+        return (amount / step) * step;
+    }
+
+    private int evenClamp(double value, int min, int max) {
+        int even = (int) Math.round(value / 2.0) * 2;
+        return CLAMP.i(even, roundToEven(min), roundToEven(max));
+    }
+
+    private int roundToEven(int value) {
+        if ((value & 1) == 0) return value;
+        int down = value - 1;
+        int up = value + 1;
+        return Math.abs(value - down) <= Math.abs(up - value) ? down : up;
+    }
+
     private void refreshPlayerNetWorth() {
         try {
             playerNetWorth = Math.max(0.0, Sanitize.money(FACTIONS.WORTH().faction(FACTIONS.player())));
@@ -465,8 +577,9 @@ public final class LoanManager {
 
     private void normalizeLoadedLoan(int loanIdx) {
         Loan loan = loans[loanIdx];
+        boolean debtAdjusted = false;
         loan.id = Math.max(1, loan.id);
-        loan.installmentsContracted = CLAMP.i(loan.installmentsContracted, 1, 365);
+        loan.installmentsContracted = CLAMP.i(loan.installmentsContracted, 1, BankConstants.MAX_LOAN_TERM);
         if (loan.installmentsRemaining <= 0 && loan.debtRemaining > BankConstants.SETTLED_DEBT_EPSILON)
             loan.installmentsRemaining = 1;
         loan.installmentsRemaining = CLAMP.i(loan.installmentsRemaining, 0, loan.installmentsContracted);
@@ -482,6 +595,7 @@ public final class LoanManager {
             loan.periodRate = Math.pow(1.0 + loan.finalRate / 100.0, 1.0 / dpy) - 1.0;
         }
         loan.penaltyRate        = Sanitize.rate(loan.penaltyRate, BankConstants.MAX_DAILY_PENALTY_RATE);
+        if (loan.penaltyCapped) loan.penaltyRate = 0;
         loan.principalRemaining = CLAMP.d(loan.principalRemaining, 0.0, loan.debtRemaining);
         if (loan.principalRemaining <= 0 && loan.debtRemaining > BankConstants.SETTLED_DEBT_EPSILON)
             loan.principalRemaining = Math.min(loan.originalPrincipal, loan.debtRemaining);
@@ -489,6 +603,18 @@ public final class LoanManager {
             loan.contractedInstallment = loan.debtRemaining / Math.max(1, loan.installmentsContracted);
         if (loan.currentInstallment <= 0 || !Double.isFinite(loan.currentInstallment))
             recalculateLoanInstallment(loanIdx);
+        double capDebt = penaltyCapDebt(loan);
+        if (loan.debtRemaining >= capDebt - BankConstants.PAYMENT_EPSILON) {
+            double debtBeforeCap = loan.debtRemaining;
+            loan.debtRemaining = Math.min(loan.debtRemaining, capDebt);
+            loan.penaltyRate = 0;
+            loan.penaltyCapped = true;
+            if (debtBeforeCap > loan.debtRemaining + BankConstants.PAYMENT_EPSILON) {
+                debtAdjusted = true;
+                recalculateLoanInstallment(loanIdx);
+            }
+        }
+        if (loan.debtHistoryCount <= 0 || debtAdjusted) recordDebtHistory(loan);
     }
 
     private void push(double[] history, double value) {

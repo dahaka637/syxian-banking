@@ -36,7 +36,8 @@ final class LoanContractPopup extends GuiSection {
         maxAmount       = BankState.INSTANCE.loans.availableLoanAmount();
         maxInstallments = BankState.INSTANCE.loans.maxInstallmentsAllowed();
         amount          = new IntImp(0, 0, Math.max(0, maxAmount));
-        installments    = new IntImp(Math.min(12, maxInstallments), 1, Math.max(1, maxInstallments));
+        installments    = new IntImp(Math.min(12, maxInstallments), BankConstants.MIN_LOAN_TERM,
+                Math.max(BankConstants.MIN_LOAN_TERM, maxInstallments));
 
         GText title = new GText(UI.FONT().H2, 120).lablify();
         title.add(TR.s("popup.contractLoan"));
@@ -63,7 +64,7 @@ final class LoanContractPopup extends GuiSection {
             @Override
             protected void renAction() {
                 activeSet(amount.get() > 0 && amount.get() <= maxAmount
-                        && installments.get() > 0 && installments.get() <= maxInstallments
+                        && installments.get() >= BankConstants.MIN_LOAN_TERM && installments.get() <= maxInstallments
                         && BankState.INSTANCE.loans.loanCount < BankConstants.MAX_LOANS);
             }
         };
@@ -79,7 +80,7 @@ final class LoanContractPopup extends GuiSection {
     }
 
     int getAmount()          { return amount.get(); }
-    int getInstallments()    { return installments.get(); }
+    int getInstallments()    { return BankState.INSTANCE.loans.clampInstallments(installments.get()); }
     int getMaxAmount()       { return maxAmount; }
     int getMaxInstallments() { return maxInstallments; }
 

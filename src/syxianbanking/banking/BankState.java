@@ -58,6 +58,7 @@ public final class BankState {
     public void updateIfNeeded() {
         int currentDay = TIME.days().bitsSinceStart();
         if (currentDay == day) {
+            loans.syncSavingsCollateral(savings);
             loans.refreshCapacity();
             return;
         }
@@ -73,6 +74,7 @@ public final class BankState {
 
             // 2–3. Treasury and credit capacity
             savings.refreshTreasury();
+            loans.syncSavingsCollateral(savings);
             loans.refreshCapacity();
 
             // 4. Late penalty rate for today (must be set before processing installments)
@@ -86,6 +88,7 @@ public final class BankState {
             loans.processDailyLoans(savings);
 
             // 7. Recompute capacity (settled loans free up available credit)
+            loans.syncSavingsCollateral(savings);
             loans.refreshCapacity();
 
             // 8. Chart history

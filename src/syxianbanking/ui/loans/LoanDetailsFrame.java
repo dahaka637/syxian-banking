@@ -24,6 +24,7 @@ import util.gui.misc.GText;
  *   Green  = installment paid in full
  *   Orange = partial payment (insufficient funds)
  *   Red    = late penalty applied
+ *   Yellow = late penalty capped
  *   Cyan   = early repayment
  */
 final class LoanDetailsFrame extends CLICKABLE.ClickableAbs {
@@ -139,6 +140,7 @@ final class LoanDetailsFrame extends CLICKABLE.ClickableAbs {
 
     private COLOR historyColor(int type) {
         if (type == Loan.OP_PENALTY)  return COLOR.RED100;
+        if (type == Loan.OP_CAP)      return COLOR.YELLOW100;
         if (type == Loan.OP_EARLY)    return COLOR.NYAN100;
         if (type == Loan.OP_CONTRACT) return COLOR.YELLOW100;
         if (type == Loan.OP_PARTIAL)  return COLOR.ORANGE100;
@@ -149,6 +151,7 @@ final class LoanDetailsFrame extends CLICKABLE.ClickableAbs {
         if (type == Loan.OP_CONTRACT) return TR.s("loanHistory.contract");
         if (type == Loan.OP_PARTIAL)  return TR.s("loanHistory.partial");
         if (type == Loan.OP_PENALTY)  return TR.s("loanHistory.penalty");
+        if (type == Loan.OP_CAP)      return TR.s("loanHistory.penaltyCap");
         if (type == Loan.OP_EARLY)    return TR.s("loanHistory.early");
         return TR.s("loanHistory.payment");
     }
@@ -157,6 +160,8 @@ final class LoanDetailsFrame extends CLICKABLE.ClickableAbs {
     private double historyDisplayAmount(Loan loan, int i) {
         int type = loan.historyTypes[i];
         if (type == Loan.OP_PAYMENT || type == Loan.OP_PARTIAL || type == Loan.OP_EARLY)
+            return -loan.historyAmounts[i];
+        if (type == Loan.OP_CAP)
             return -loan.historyAmounts[i];
         return loan.historyAmounts[i];
     }

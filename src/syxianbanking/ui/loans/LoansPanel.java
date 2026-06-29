@@ -4,6 +4,7 @@ import snake2d.util.color.COLOR;
 import syxianbanking.TR;
 import syxianbanking.banking.BankState;
 import syxianbanking.ui.BankPanel;
+import syxianbanking.ui.TextLabel;
 import util.gui.misc.GButt;
 import view.main.VIEW;
 
@@ -54,11 +55,8 @@ public final class LoansPanel extends BankPanel {
 
         add(new LoanDetailsFrame(CONTENT_W, chartY - 422), x, 404);
 
-        addChartBlock(TR.s("data.loanPenaltyHistory"),
-                BankState.INSTANCE.loans.penaltyHistory,
-                COLOR.ORANGE100, TR.s("chart.loanPenalty"), true, x, chartY);
-        addChartBlock(TR.s("data.loanRateHistory"),
-                BankState.INSTANCE.loans.rateHistory,
-                COLOR.RED100, TR.s("chart.loanRate"), true, x + CHART_W + CHART_GAP, chartY);
+        add(new TextLabel(TR.s("data.loanDebtHistory"), CONTENT_W), x, chartY);
+        add(new LoanDebtChart(CONTENT_W, CHART_H, COLOR.ORANGE100, TR.s("chart.loanDebt")),
+                x, chartY + CHART_LABEL_OFFSET);
     }
 }

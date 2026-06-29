@@ -7,7 +7,7 @@ A simple banking system mod for [Songs of Syx](https://store.steampowered.com/ap
 - Deposit and withdraw denars into a savings account
 - Take loans with automatic daily installments
 - Prepay loans early with an interest discount
-- View operation history and rate charts for the last few days
+- View operation history, savings charts and per-loan debt evolution
 
 Interest rates are dynamic, calculated from the world economy — NPC kingdom wealth, economic stress and disparity between factions.
 
@@ -32,7 +32,7 @@ src/syxianbanking/
 │   ├── RateCalculator.java          3-pass NPC scan → dynamic market interest rates
 │   ├── SavingsAccount.java          Balance, deposits, withdrawals, daily interest and operation log
 │   ├── LoanManager.java             Loan origination, daily payments, early repayment, credit capacity
-│   ├── BankSerializer.java          Binary save/load with V1 + V2 format and backward compatibility
+│   ├── BankSerializer.java          Binary save/load with versioned backward-compatible blocks
 │   └── Sanitize.java                Package-private NaN/Infinity/overflow guards
 │
 └── ui/
@@ -56,6 +56,7 @@ src/syxianbanking/
         ├── LoanSummary.java         Rate + credit summary card
         ├── LoanListFrame.java       Scrollable list of active loans
         ├── LoanDetailsFrame.java    Stats + event history for the selected loan
+        ├── LoanDebtChart.java       Debt-balance chart for the selected loan
         ├── EmptyLoansFrame.java     Placeholder card when no loans are active
         ├── LoanContractPopup.java   New loan popup with live rate/installment preview
         ├── LoanContractInfo.java    Preview panel inside the contract popup
@@ -66,4 +67,4 @@ src/syxianbanking/
 ## Compatibility
 
 - Songs of Syx **v71**
-- Mod version: **0.2.0**
+- Mod version: **0.2.5**

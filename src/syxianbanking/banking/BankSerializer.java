@@ -26,6 +26,16 @@ import syxianbanking.domain.Loan;
  *     [chart histories: savings rate, loan rate, penalty, balance]
  *     int SAVE_V2_END_MARK
  *
+ *   [V3 block — optional]
+ *     int SAVE_V3_MARK
+ *     [per-loan penalty cap flags]
+ *     int SAVE_V3_END_MARK
+ *
+ *   [V4 block — optional]
+ *     int SAVE_V4_MARK
+ *     [per-loan debt chart histories]
+ *     int SAVE_V4_END_MARK
+ *
  * Compatibility rules:
  *   - Never reorder or remove fields from the V1 block.
  *   - Add new data after SAVE_V2_END_MARK with a new V3 marker block.
@@ -62,6 +72,8 @@ public final class BankSerializer {
         file.i(state.loans.selectedLoan);
         for (int i = 0; i < state.loans.loanCount; i++) saveLoan(file, state.loans.loans[i]);
         saveV2Extension(file, state);
+        saveV3Extension(file, state);
+        saveV4Extension(file, state);
     }
 
     // ---- Load ----
@@ -87,6 +99,7 @@ public final class BankSerializer {
 
         // Very old saves (before SAVE_MARK) stop here.
         if (file.remainingInts() <= 0 || !file.test(BankConstants.SAVE_MARK)) {
+            state.loans.syncSavingsCollateral(state.savings);
             state.loans.refreshCapacity();
             return;
         }
@@ -135,7 +148,20 @@ public final class BankSerializer {
         // V2 block is optional — present only in saves written after V2 was introduced.
         if (file.remainingInts() > 0 && file.test(BankConstants.SAVE_V2_MARK))
             loadV2Extension(file, state);
+        if (file.remainingInts() > 0 && file.test(BankConstants.SAVE_V3_MARK)) {
+            loadV3Extension(file, state);
+            state.loans.normalizeLoadedLoans();
+            if (!state.loans.loanValid(state.loans.selectedLoan))
+                state.loans.selectedLoan = state.loans.loanCount > 0 ? 0 : -1;
+        }
+        if (file.remainingInts() > 0 && file.test(BankConstants.SAVE_V4_MARK)) {
+            loadV4Extension(file, state);
+            state.loans.normalizeLoadedLoans();
+            if (!state.loans.loanValid(state.loans.selectedLoan))
+                state.loans.selectedLoan = state.loans.loanCount > 0 ? 0 : -1;
+        }
 
+        state.loans.syncSavingsCollateral(state.savings);
         state.loans.refreshCapacity();
     }
 
@@ -152,7 +178,7 @@ public final class BankSerializer {
         file.d(Math.max(0.0, Sanitize.money(state.loans.playerNetWorth)));
         file.d(Math.max(0.0, Sanitize.money(state.loans.maxLoanAvailable)));
         file.d(Sanitize.rate(state.loans.latePenaltyRate, BankConstants.MAX_DAILY_PENALTY_RATE));
-        file.i(CLAMP.i(state.loans.maxLoanInstallments, 1, 365));
+        file.i(CLAMP.i(state.loans.maxLoanInstallments, 1, BankConstants.MAX_LOAN_TERM));
         file.i(CLAMP.i(state.historySamples, 0, BankConstants.HISTORY_DAYS));
         file.i(state.historyInitialized ? 1 : 0);
         // History order must match exactly in save and load.
@@ -173,7 +199,7 @@ public final class BankSerializer {
         state.loans.playerNetWorth           = Math.max(0.0, Sanitize.money(file.d()));
         state.loans.maxLoanAvailable         = Math.max(0.0, Sanitize.money(file.d()));
         state.loans.latePenaltyRate          = Sanitize.rate(file.d(), BankConstants.MAX_DAILY_PENALTY_RATE);
-        state.loans.maxLoanInstallments      = CLAMP.i(file.i(), 1, 365);
+        state.loans.maxLoanInstallments      = CLAMP.i(file.i(), 1, BankConstants.MAX_LOAN_TERM);
         state.historySamples                 = CLAMP.i(file.i(), 0, BankConstants.HISTORY_DAYS);
         state.historyInitialized             = file.i() != 0 && state.historySamples > 0;
         loadHistory(file, state.savings.rateHistory,    BankConstants.MAX_SAVINGS_RATE);
@@ -182,6 +208,87 @@ public final class BankSerializer {
         loadHistory(file, state.savings.balanceHistory, BankConstants.MAX_MONEY);
         if (file.remainingInts() > 0)
             file.test(BankConstants.SAVE_V2_END_MARK); // consume sentinel to keep file pointer consistent
+    }
+
+    // ---- V3 extension: per-contract penalty cap state ----
+
+    private static void saveV3Extension(FilePutter file, BankState state) {
+        file.i(BankConstants.SAVE_V3_MARK);
+        file.i(state.loans.loanCount);
+        for (int i = 0; i < state.loans.loanCount; i++) {
+            Loan loan = state.loans.loans[i];
+            file.i(loan.id);
+            file.bool(loan.penaltyCapped);
+        }
+        file.i(BankConstants.SAVE_V3_END_MARK);
+    }
+
+    private static void loadV3Extension(FileGetter file, BankState state) throws IOException {
+        int savedCaps = file.i();
+        if (savedCaps < 0 || savedCaps > BankConstants.MAX_SAVED_LOANS)
+            throw new IOException("invalid saved penalty cap count: " + savedCaps);
+        for (int i = 0; i < savedCaps; i++) {
+            int id = file.i();
+            boolean capped = file.bool();
+            Loan loan = findLoanById(state, id);
+            if (loan != null) {
+                loan.penaltyCapped = capped;
+                if (capped) loan.penaltyRate = 0;
+            }
+        }
+        if (file.remainingInts() > 0)
+            file.test(BankConstants.SAVE_V3_END_MARK);
+    }
+
+    private static Loan findLoanById(BankState state, int id) {
+        for (int i = 0; i < state.loans.loanCount; i++) {
+            if (state.loans.loans[i].id == id) return state.loans.loans[i];
+        }
+        return null;
+    }
+
+    // ---- V4 extension: per-contract debt chart history ----
+
+    private static void saveV4Extension(FilePutter file, BankState state) {
+        file.i(BankConstants.SAVE_V4_MARK);
+        file.i(state.loans.loanCount);
+        for (int i = 0; i < state.loans.loanCount; i++) {
+            Loan loan = state.loans.loans[i];
+            int samples = CLAMP.i(loan.debtHistoryCount, 0, loan.debtHistoryValues.length);
+            int first = loan.debtHistoryValues.length - samples;
+            file.i(loan.id);
+            file.i(samples);
+            for (int h = first; h < loan.debtHistoryValues.length; h++) {
+                file.i(loan.debtHistoryDays[h]);
+                file.d(Math.max(0.0, Sanitize.money(loan.debtHistoryValues[h])));
+            }
+        }
+        file.i(BankConstants.SAVE_V4_END_MARK);
+    }
+
+    private static void loadV4Extension(FileGetter file, BankState state) throws IOException {
+        int savedLoans = file.i();
+        if (savedLoans < 0 || savedLoans > BankConstants.MAX_SAVED_LOANS)
+            throw new IOException("invalid saved loan debt history count: " + savedLoans);
+        for (int i = 0; i < savedLoans; i++) {
+            int id = file.i();
+            int samples = file.i();
+            if (samples < 0 || samples > BankConstants.MAX_SAVED_LOAN_DEBT_HISTORY)
+                throw new IOException("invalid saved loan debt history length: " + samples);
+
+            Loan loan = findLoanById(state, id);
+            if (loan != null) loan.clearDebtHistory();
+
+            int firstKept = Math.max(0, samples - BankConstants.LOAN_DEBT_HISTORY_DAYS);
+            for (int h = 0; h < samples; h++) {
+                int day = file.i();
+                double debt = Math.max(0.0, Sanitize.money(file.d()));
+                if (loan != null && h >= firstKept)
+                    loan.recordDebtHistory(day, debt);
+            }
+        }
+        if (file.remainingInts() > 0)
+            file.test(BankConstants.SAVE_V4_END_MARK);
     }
 
     // ---- History helpers ----
@@ -263,7 +370,7 @@ public final class BankSerializer {
         if (target != null) {
             target.id                     = Math.max(1, id);
             target.contractDay            = contractDay;
-            target.installmentsContracted = CLAMP.i(installmentsContracted, 1, 365);
+            target.installmentsContracted = CLAMP.i(installmentsContracted, 1, BankConstants.MAX_LOAN_TERM);
             target.installmentsRemaining  = CLAMP.i(installmentsRemaining, 0, target.installmentsContracted);
             target.originalPrincipal      = originalPrincipal;
             target.netWorthAtContract     = netWorthAtContract;

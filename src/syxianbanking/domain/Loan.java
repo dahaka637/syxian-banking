@@ -1,5 +1,7 @@
 package syxianbanking.domain;
 
+import syxianbanking.banking.BankConstants;
+
 /**
  * Represents a single active loan contract.
  *
@@ -26,6 +28,7 @@ public final class Loan {
     public static final int OP_PARTIAL  = 2; // installment paid partially (insufficient funds)
     public static final int OP_PENALTY  = 3; // late penalty applied
     public static final int OP_EARLY    = 4; // early repayment
+    public static final int OP_CAP      = 5; // late penalties permanently capped
 
     // ---- Contract identity and terms ----
     public int id;                       // unique sequential ID across the campaign
@@ -43,6 +46,7 @@ public final class Loan {
     public double contractedInstallment; // installment calculated at signing
     public double currentInstallment;    // recalculated installment after penalties or partial prepay
     public double penaltyRate;           // daily late penalty rate (% of outstanding balance)
+    public boolean penaltyCapped;        // true once this contract reaches the penalty cap
     public double principalRemaining;    // principal not yet amortized
     public double debtRemaining;         // total outstanding debt (principal + accrued interest + penalties)
 
@@ -53,6 +57,11 @@ public final class Loan {
     public final double[] historyAmounts   = new double[MAX_HISTORY];
     public final double[] historyDiscounts = new double[MAX_HISTORY]; // early-payment discount received
     public final double[] historyBalances  = new double[MAX_HISTORY]; // balance after the event
+
+    // ---- Daily debt chart history (most recent at the end of the arrays) ----
+    public int debtHistoryCount;
+    public final int[]    debtHistoryDays   = new int[BankConstants.LOAN_DEBT_HISTORY_DAYS];
+    public final double[] debtHistoryValues = new double[BankConstants.LOAN_DEBT_HISTORY_DAYS];
 
     /** Zeros all fields. Called when removing a loan or reusing a slot in the loans array. */
     public void clear() {
@@ -68,9 +77,11 @@ public final class Loan {
         contractedInstallment = 0;
         currentInstallment = 0;
         penaltyRate = 0;
+        penaltyCapped = false;
         principalRemaining = 0;
         debtRemaining = 0;
         historyCount = 0;
+        clearDebtHistory();
         for (int h = 0; h < MAX_HISTORY; h++) {
             historyTypes[h] = 0;
             historyDays[h] = 0;
@@ -94,9 +105,11 @@ public final class Loan {
         contractedInstallment = src.contractedInstallment;
         currentInstallment = src.currentInstallment;
         penaltyRate = src.penaltyRate;
+        penaltyCapped = src.penaltyCapped;
         principalRemaining = src.principalRemaining;
         debtRemaining = src.debtRemaining;
         historyCount = src.historyCount;
+        debtHistoryCount = src.debtHistoryCount;
         for (int h = 0; h < MAX_HISTORY; h++) {
             historyTypes[h] = src.historyTypes[h];
             historyDays[h] = src.historyDays[h];
@@ -104,10 +117,39 @@ public final class Loan {
             historyDiscounts[h] = src.historyDiscounts[h];
             historyBalances[h] = src.historyBalances[h];
         }
+        for (int h = 0; h < debtHistoryValues.length; h++) {
+            debtHistoryDays[h] = src.debtHistoryDays[h];
+            debtHistoryValues[h] = src.debtHistoryValues[h];
+        }
+    }
+
+    /** Clears the per-loan chart history without touching contract terms or event history. */
+    public void clearDebtHistory() {
+        debtHistoryCount = 0;
+        for (int h = 0; h < debtHistoryValues.length; h++) {
+            debtHistoryDays[h] = 0;
+            debtHistoryValues[h] = 0;
+        }
+    }
+
+    /** Records one daily debt sample, overwriting the current day if already present. */
+    public void recordDebtHistory(int day, double debt) {
+        int last = debtHistoryValues.length - 1;
+        if (debtHistoryCount > 0 && debtHistoryDays[last] == day) {
+            debtHistoryValues[last] = debt;
+            return;
+        }
+        for (int h = 0; h < last; h++) {
+            debtHistoryDays[h] = debtHistoryDays[h + 1];
+            debtHistoryValues[h] = debtHistoryValues[h + 1];
+        }
+        debtHistoryDays[last] = day;
+        debtHistoryValues[last] = debt;
+        if (debtHistoryCount < debtHistoryValues.length) debtHistoryCount++;
     }
 
     /** Returns true if type is a valid event code for the history arrays. */
     public static boolean historyTypeValid(int type) {
-        return type >= OP_CONTRACT && type <= OP_EARLY;
+        return type >= OP_CONTRACT && type <= OP_CAP;
     }
 }
