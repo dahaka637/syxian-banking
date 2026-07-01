@@ -67,4 +67,4 @@ src/syxianbanking/
 ## Compatibility
 
 - Songs of Syx **v71**
-- Mod version: **0.2.5**
+- Mod version: **0.2.6**

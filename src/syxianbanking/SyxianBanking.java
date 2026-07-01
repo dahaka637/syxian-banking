@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import game.boosting.BOOSTABLE_O;
 import game.boosting.BOOSTABLES;
-import game.boosting.Boostable;
+import game.boosting.BSourceInfo;
+import game.boosting.Booster;
 import init.constant.C;
 import script.SCRIPT;
 import snake2d.util.file.FileGetter;
@@ -37,9 +39,10 @@ import view.ui.manage.IManager;
  *   injects the bank button into the main tab bar via reflection (see install()).
  *
  * Inflation suppression:
- *   The base game has a bug where DEFALTION = 0 causes a division-by-zero that
- *   produces a 2.15B gold treasury glitch. We force DEFALTION to 9999 via reflection,
- *   effectively disabling inflation. Done once per session in suppressInflation().
+ *   The base game applies inflation as treasury * 0.2 / DEFALTION. Songs of Syx
+ *   0.71.44 made Boostable.baseValue final, so changing it by reflection no
+ *   longer reliably affects the live calculation. We add a fixed game boost to
+ *   DEFALTION instead, keeping the normal Boostable.get(...) path intact.
  */
 public final class SyxianBanking implements SCRIPT {
 
@@ -182,15 +185,17 @@ public final class SyxianBanking implements SCRIPT {
             }
         }
 
-        // DEFALTION is the anti-inflation divisor — zero causes division-by-zero (2.15B gold bug).
-        // Setting it to 9999 effectively disables inflation. Done once per session via reflection.
+        // DEFALTION is the anti-inflation divisor. Adding +9998 keeps its effective value at
+        // 9999 through the game's normal boost pipeline, which suppresses inflation/deflation.
         private static void suppressInflation() {
             if (inflationSuppressed) return;
             try {
-                Boostable defaltion = BOOSTABLES.CIVICS().DEFALTION;
-                Field f = Boostable.class.getDeclaredField("baseValue");
-                f.setAccessible(true);
-                f.setDouble(defaltion, 9999.0);
+                new Booster(new BSourceInfo("Syxian Banking inflation suppression", null), false) {
+                    @Override public double from() { return 9998.0; }
+                    @Override public double to() { return 9998.0; }
+                    @Override public double getValue(double input) { return 9998.0; }
+                    @Override protected double pget(BOOSTABLE_O o) { return 1.0; }
+                }.add(BOOSTABLES.CIVICS().DEFALTION);
                 inflationSuppressed = true;
             } catch (Throwable e) {
                 writeDebug("suppressInflation failed: " + e.getClass().getName() + " - " + e.getMessage());
