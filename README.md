@@ -8,6 +8,7 @@ A simple banking system mod for [Songs of Syx](https://store.steampowered.com/ap
 - Take loans with automatic daily installments
 - Prepay loans early with an interest discount
 - View operation history, savings charts and per-loan debt evolution
+- Research banking improvements in the Administration technology tree
 
 Interest rates are dynamic, calculated from the world economy — NPC kingdom wealth, economic stress and disparity between factions.
 
@@ -67,4 +68,4 @@ src/syxianbanking/
 ## Compatibility
 
 - Songs of Syx **v71**
-- Mod version: **0.2.6**
+- Mod version: **0.3.0**

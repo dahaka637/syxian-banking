@@ -1,0 +1,164 @@
+_JSON_ADD: true,
+NAME: "管理",
+TECHS: {
+	EMBA0: {
+		NAME: "使馆",
+		DESC: "解锁一个能让我们改善与其他派系关系，操纵他们的宫廷的地方。",
+	},
+	ADMI0: {
+		NAME: "文件归档",
+		DESC: "重构我们的管理任务并提高其效率。",
+	},
+	ADMIT: {
+		NAME: "文书工具",
+		DESC: "",
+	},
+	DEFL0: {
+		NAME: "会计",
+		DESC: "抑制通货膨胀，确保我们的资金储备处在良好水平。",
+	},
+	DIP01: {
+		NAME: "魅力外交",
+		DESC: "向我们的外交官传授魅力之艺术，执行外交任务时更有效率。",
+	},
+	IMMI0: {
+		NAME: "广告",
+		DESC: "让我们良好的声誉传播开来，吸引更多的人来到这座美丽的城市。",
+	},
+	LAW00: {
+		NAME: "监狱",
+		DESC: "让我们建造可以用于惩罚罪犯的监狱。",
+	},
+	LAW01: {
+		NAME: "处决",
+		DESC: "让我们建造处刑台，杀一儆百。",
+	},
+	LAW02: {
+		NAME: "枷锁",
+		DESC: "可以用作其他惩罚的补充，羞辱并威慑罪犯。",
+	},
+	LAW03: {
+		NAME: "秘密警察",
+		DESC: "对现行的法律制度进行深思熟虑的改革，提高其执行力度。",
+	},
+	LAW04: {
+		NAME: "司法",
+		DESC: "完善我们的司法系统，使我们能够对被抓获的罪犯进行审判。",
+	},
+	LAW05: {
+		NAME: "秘密警察",
+		DESC: "对现行的法律制度进行深思熟虑的改革，提高其执行力度。",
+	},
+	LAW06: {
+		NAME: "警卫",
+		DESC: "解锁协助我们抓获罪犯的岗哨。",
+	},
+	OPIN0: {
+		NAME: "政治宣传",
+		DESC: "确保我方的声望能够准确传达给他国统治者。换句话说，改善他们对你的看法。",
+	},
+	SAFE0: {
+		NAME: "工作安全规章",
+		DESC: "让我们起草一些安全规则以防止意外发生。",
+	},
+	EDUC0: {
+		NAME: "学校教育",
+		DESC: "让易受影响的年轻心智掌握高智力工作中需要的知识，或者灌输他们让他们在艰难时期保持忠诚。",
+	},
+	EDUC1: {
+		NAME: "大学",
+		DESC: "教育成年人以便他们在脑力工作中表现出色，或在最严酷的时期灌输他们以让他们更加忠诚。",
+	},
+	EDUC2: {
+		NAME: "学术",
+		DESC: "让好学之风蔚然成形，总体上促进了学习效率。",
+	},
+	LAB00: {
+		NAME: "改良实验室",
+		DESC: "混乱的瞎整和试错已经让位于更有条理和秩序的实验。为你的科学家提供更清洁的工作环境，以继续他们的进展。",
+	},
+	LAB01: {
+		NAME: "先进实验室",
+		DESC: "实验引出了正式的方法和先进的理论。你们的实验室现在需要更精密的仪器来进行新发现。",
+	},
+	LABTT: {
+		NAME: "实验室工具",
+		DESC: "",
+	},
+	LIB00: {
+		NAME: "图书馆",
+		DESC: "一辈子的学习都不能涵盖你的人民所有的发现。图书馆通过保存现有的知识来帮助你的实验室。没有源源不断的珍贵皮纸，记载工作是不可能完成的。",
+	},
+	LIB01: {
+		NAME: "先进图书馆",
+		DESC: "一排排论述严谨的图书被编入索引，便于参考，这使图书馆成为科学家专业化的强大工具。",
+	},
+	PAPER: {
+		NAME: "纸张处理",
+		DESC: "对纸张的改进使我们能够在行业中减少其使用量。",
+	},
+	LABT: {
+		NAME: "实验室工具",
+		DESC: "",
+	},
+	STOR0: {
+		NAME: "物流",
+		DESC: "一个稳定的后勤网络就如城市搏动的心脏一般。提高你的物流工人快速运输货物的能力，让解放出来的工人反哺其他产业，这将会被运用到仓库，装货站，集货点，卸货站。",
+	},
+	STOR1: {
+		NAME: "装卸货站",
+		DESC: "沉重的货车在牲畜的嘶吼声中驶过街道。",
+	},
+	PROX0: {
+		NAME: "商队",
+		DESC: "在长途贸易商队上的创新，让我们能够在进行贸易时支付更低的运费。",
+	},
+	MISC3: {
+		NAME: "防腐",
+		DESC: "每年都有许多东西因为腐烂和生锈而浪费掉。 你的人民学会如何正确地储存物品，并将食物保存得更久。",
+	},
+	MAIN0: {
+		NAME: "维护",
+		DESC: "建造者学会让建筑经受住时间考验的秘诀。",
+	},
+	UNI00: {
+		NAME: "University",
+		DESC: "Unlocks the university where subjects can enlighten themselves.",
+	},
+	UNI01: {
+		NAME: "大学",
+		DESC: "解锁大学。大学是臣民们自我启蒙的地方。",
+	},
+	UNI02: {
+		NAME: "学者",
+		DESC: "提高学习速度，并提升启蒙上限",
+	},
+	UNI03: {
+		NAME: "学术",
+		DESC: "提高学习速度，并提升启蒙上限",
+	},
+	SCH00: {
+		NAME: "School",
+		DESC: "Allows us to educate our children in a school",
+	},
+	SCH01: {
+		NAME: "Improved Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH02: {
+		NAME: "Advanced Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH03: {
+		NAME: "Advanced Schooling",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	BANK0: {
+		NAME: "银行业",
+		DESC: "开放储蓄和贷款功能。",
+	},
+	BANK1: {
+		NAME: "银行实践",
+		DESC: "提高储蓄收益，并降低贷款利率和逾期罚金。",
+	},
+},

@@ -1,0 +1,377 @@
+TREE: {
+	0: [SCH00,UNI00,DEFL0,LAW06,LAW01,MISC3,STOR1,PROX0,],
+	1: [SCH01,UNI01,SAFE0,LAW02,LAW00,MAIN0,STOR0,_____,],
+	2: [SCH02,UNI02,IMMI0,BANK0,LAW04,_____,_____,_____,],
+	3: [SCH03,UNI03,BANK1,_____,LAW05,EMBA0,_____,_____,],
+	4: [_____,_____,_____,_____,_____,_____,_____,_____,],
+},
+
+ICON: 32->INFRA->0,
+COLOR: 0_205_33,
+CATEGORY: 500,
+
+TECHS: {
+	SCH00: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 15.00,
+		},
+		UNLOCKS_FACTION: [
+			ROOM_SCHOOL_NORMAL,
+		],
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 200,
+			},
+		},
+	},
+	SCH01: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 20.00,
+		},
+		BOOST: {
+			ROOM_SCHOOL_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_0>ADD: 10,
+		},
+		REQUIRES_TECH_LEVEL: {
+			SCH00: 1,
+		},
+	},
+	SCH02: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 80,
+		},
+		BOOST: {
+			ROOM_SCHOOL_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_0>ADD: 20,
+		},
+		REQUIRES_TECH_LEVEL: {
+			SCH01: 1,
+		},
+	},
+	SCH03: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 150,
+		},
+		BOOST: {
+			ROOM_SCHOOL_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_0>ADD: 60,
+		},
+		REQUIRES_TECH_LEVEL: {
+			SCH02: 1,
+		},
+	},
+	UNI00: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 50,
+		},
+		UNLOCKS_FACTION: [
+			ROOM_UNIVERSITY_NORMAL,
+		],
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 200,
+			},
+		},
+	},
+	UNI01: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 50.00,
+		},
+		BOOST: {
+			ROOM_UNIVERSITY_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_1>ADD: 10,
+		},
+		REQUIRES_TECH_LEVEL: {
+			UNI00: 1,
+		},
+	},
+	UNI02: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 100,
+		},
+		BOOST: {
+			ROOM_UNIVERSITY_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_1>ADD: 20,
+		},
+		REQUIRES_TECH_LEVEL: {
+			UNI01: 1,
+		},
+	},
+	UNI03: {
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 200,
+		},
+		BOOST: {
+			ROOM_UNIVERSITY_NORMAL>ADD: 1,
+			CIVIC_EDUCATION_LIMIT_1>ADD: 60,
+		},
+		REQUIRES_TECH_LEVEL: {
+			UNI02: 1,
+		},
+	},
+	DEFL0: {
+		COSTS: {
+			CIVIC_ADMIN: 20,
+		},
+		LEVEL_MAX: 8,
+		LEVEL_COST_INC: 10,
+
+		BOOST: {
+			CIVIC_DEFLATION>ADD: 0.1,
+		},
+	},
+	SAFE0: {
+		COSTS: {
+			CIVIC_ADMIN: 10,
+		},
+		LEVEL_MAX: 25,
+		LEVEL_COST_INC: 5,
+		REQUIRES_TECH_LEVEL: {
+		},
+		REQUIRES: {},
+		UNLOCKS_FACTION: [
+
+		],
+		UNLOCKS_REGION: [],
+		BOOST: {
+			CIVIC_ACCIDENT>ADD: 0.5,
+		},
+	},
+	IMMI0: {
+		COSTS: {
+			CIVIC_ADMIN: 20,
+		},
+		LEVEL_MAX: 3,
+		LEVEL_COST_INC: 5,
+		BOOST: {
+			CIVIC_IMMIGRATION>ADD: 0.25,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 2000,
+			},
+		},
+	},
+		LAW00: {
+		COSTS: {
+			CIVIC_ADMIN: 10,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 200,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_PRISON,
+		],
+	},
+	LAW01: {
+		COSTS: {
+			CIVIC_ADMIN: 5,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 200,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_EXECUTION,
+		],
+		REQUIRES_TECH_LEVEL: {
+
+		},
+	},
+	LAW02: {
+		COSTS: {
+			CIVIC_ADMIN: 5,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 200,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_STOCKS,
+		],
+	},
+
+	LAW04: {
+		COSTS: {
+			CIVIC_ADMIN: 40,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 500,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_COURT,
+		],
+		REQUIRES_TECH_LEVEL: {
+			LAW00: 1,
+		},
+	},
+	LAW05: {
+		COSTS: {
+			CIVIC_ADMIN: 100,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 100,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_POLICE,
+		],
+	},
+	LAW06: {
+		COSTS: {
+			CIVIC_INNOVATION: 4,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 100,
+			},
+		},
+		UNLOCKS_FACTION: [
+			ROOM_GUARD,
+		],
+	},
+	MISC3: {
+		LEVEL_MAX: 25,
+		COSTS: {
+			CIVIC_ADMIN: 25,
+		},
+		LEVEL_COST_INC: 25,
+		BOOST: {
+			CIVIC_SPOILAGE>ADD: 0.1,
+		},
+		REQUIRES: {
+				GREATER: {
+					POPULATION: 2000,
+				},
+		},
+	},
+	MAIN0: {
+		LEVEL_MAX: 10,
+		COSTS: {
+			CIVIC_ADMIN: 25,
+		},
+		LEVEL_COST_INC: 25,
+		BOOST: {
+			CIVIC_MAINTENANCE>ADD: 0.05,
+		},
+		REQUIRES: {
+				GREATER: {
+					POPULATION: 2000,
+				},
+		},
+	},
+	EMBA0: {
+		LEVEL_MAX: 5,
+		LEVEL_COST_INC: 5,
+		COSTS: {
+			CIVIC_KNOWLEDGE: 5,
+		},
+		REQUIRES_TECH_LEVEL: {
+
+		},
+		BOOST: {
+			ROOM_EMBASSY>ADD: 0.2,
+		},
+	},
+	STOR0: {
+		LEVEL_MAX: 10,
+		COSTS: {
+			CIVIC_ADMIN: 25,
+		},
+		LEVEL_COST_INC: 25,
+		REQUIRES_TECH_LEVEL: {
+			STOR1: 1,
+		},
+		REQUIRES: {},
+		UNLOCKS_FACTION: [],
+		UNLOCKS_REGION: [],
+		BOOST: {
+			ROOM_STOCKPILE>ADD: 1.0,
+		},
+	},
+	STOR1: {
+		COSTS: {
+			CIVIC_ADMIN: 40,
+		},
+		REQUIRES_TECH_LEVEL: {
+
+
+		},
+		REQUIRES: {},
+		UNLOCKS_FACTION: [
+			ROOM_TRANSPORT,
+			ROOM_STATION,
+		],
+		UNLOCKS_REGION: [],
+		BOOST: {},
+	},
+	PROX0: {
+		ICON: 32->TECH_OTHER->0,
+		LEVEL_MAX: 20,
+		LEVEL_COST_INC: 5,
+		COSTS: {
+			CIVIC_ADMIN: 5,
+		},
+		REQUIRES_TECH_LEVEL: {
+
+		},
+		REQUIRES: {},
+		UNLOCKS_FACTION: [],
+		UNLOCKS_REGION: [],
+		BOOST: {
+			WORLD_PROXIMITY_TOLL>ADD: 0.25,
+		},
+	},
+	BANK0: {
+		ICON: 32->_UI->13,
+		LEVEL_MAX: 1,
+		COSTS: {
+			CIVIC_ADMIN: 30,
+		},
+		REQUIRES_TECH_LEVEL: {
+			DEFL0: 1,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 250,
+			},
+		},
+		UNLOCKS_FACTION: [],
+		UNLOCKS_REGION: [],
+		BOOST: {},
+	},
+	BANK1: {
+		LEVEL_MAX: 10,
+		LEVEL_COST_INC: 5,
+		COSTS: {
+			CIVIC_ADMIN: 20,
+		},
+		REQUIRES_TECH_LEVEL: {
+			BANK0: 1,
+			DEFL0: 2,
+		},
+		REQUIRES: {
+			GREATER: {
+				POPULATION: 500,
+			},
+		},
+		UNLOCKS_FACTION: [],
+		UNLOCKS_REGION: [],
+		BOOST: {},
+	},
+},

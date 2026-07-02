@@ -1,0 +1,164 @@
+_JSON_ADD: true,
+NAME: "Administration",
+TECHS: {
+	EMBA0: {
+		NAME: "Ambassade",
+		DESC: "Débloque un endroit qui nous permet d'améliorer les relations avec d'autres factions et de manipuler leurs tribunaux.",
+	},
+	ADMI0: {
+		NAME: "Archivage des Papiers",
+		DESC: "Restructure notre travail administratif et le rend plus efficace.",
+	},
+	ADMIT: {
+		NAME: "Outils d'administration",
+		DESC: "",
+	},
+	DEFL0: {
+		NAME: "Comptabilité",
+		DESC: "Nous permet de freiner l'inflation et de maintenir notre crédit à un bon niveau.",
+	},
+	DIP01: {
+		NAME: "École de charme",
+		DESC: "Éduque nos diplomates dans l’art du charisme, les rendant plus efficaces dans les missions.",
+	},
+	IMMI0: {
+		NAME: "Publicité",
+		DESC: "Nous laissons notre bonne réputation s'étendre plus loin, attirant ainsi plus de gens dans notre belle ville.",
+	},
+	LAW00: {
+		NAME: "Prisons",
+		DESC: "Nous permet de construire des prisons qui peuvent être utilisées pour punir les criminels.",
+	},
+	LAW01: {
+		NAME: "Exécution",
+		DESC: "Nous permet de construire une place pour les exécutions publiques dans le but de faire de nos criminels un exemple.",
+	},
+	LAW02: {
+		NAME: "Piloris",
+		DESC: "Peut être utilisé en complément d'autres punitions pour faire honte aux criminels et les dissuader.",
+	},
+	LAW03: {
+		NAME: "Police Secrète",
+		DESC: "Il amène à réfléchir sur notre système juridique actuel et à en améliorer l'efficacité.",
+	},
+	LAW04: {
+		NAME: "Justice",
+		DESC: "Améliore notre système judiciaire et nous permet d'organiser des procès pour les criminels arrêtés.",
+	},
+	LAW05: {
+		NAME: "Police Secrète",
+		DESC: "Il amène à réfléchir sur notre système juridique actuel et à en améliorer l'efficacité.",
+	},
+	LAW06: {
+		NAME: "Gardes",
+		DESC: "Débloquez le poste de garde qui nous aidera à attraper des criminels.",
+	},
+	OPIN0: {
+		NAME: "Propagande",
+		DESC: "Il garantit que notre réputation reste intacte auprès des dirigeants étrangers. En d'autres termes, il renforce l'opinion qu'ils ont de vous.",
+	},
+	SAFE0: {
+		NAME: "Sécurité au travail",
+		DESC: "Permet d’établir des protocoles pour limiter les accidents.",
+	},
+	EDUC0: {
+		NAME: "Éducation",
+		DESC: "Remplissez les jeunes esprits impressionnables de connaissances pour les préparer à des études supérieures, ou endoctrinez-les pour qu'ils restent loyaux dans les moments difficiles.",
+	},
+	EDUC1: {
+		NAME: "Université",
+		DESC: "Éduquez les adultes pour effectuer des travaux intellectuels très élevés, ou les endoctriner à être plus loyaux pendant les temps difficiles.",
+	},
+	EDUC2: {
+		NAME: "Savants",
+		DESC: "Fait de l'éducation et de l'apprentissage une tendance et stimule les connaissances en général.",
+	},
+	LAB00: {
+		NAME: "Laboratoire Amélioré",
+		DESC: "Le bricolage chaotique a laissé place à une expérimentation plus méthodique. Offrez à vos savants un environnement de travail plus propre afin qu’ils poursuivent leurs progrès.",
+	},
+	LAB01: {
+		NAME: "Laboratoire avancé",
+		DESC: "L'expérimentation a permis d'élaborer des méthodes formelles et des théories avancées. Vos laboratoires ont désormais besoin d'instruments plus précis pour réaliser de nouvelles découvertes.",
+	},
+	LABTT: {
+		NAME: "Outils de Laboratoire",
+		DESC: "",
+	},
+	LIB00: {
+		NAME: "Bibliothèque",
+		DESC: "Une vie d’étude ne suffit pas à couvrir tout le savoir de votre peuple. Les bibliothécaires assistent les laboratoires en préservant les connaissances existantes. Mais leur travail est impossible sans un approvisionnement régulier en précieux parchemin de vélin.",
+	},
+	LIB01: {
+		NAME: "Bibliothèque avancée",
+		DESC: "Des rangées de textes soigneusement organisés et indexés pour une consultation facile ont fait des bibliothèques un puissant outil de spécialisation pour vos scientifiques.",
+	},
+	PAPER: {
+		NAME: "Traitement du papier",
+		DESC: "Les progrès réalisés dans la connaissance du papier en tant que matériau nous permettent d'en utiliser moins dans nos industries.",
+	},
+	LABT: {
+		NAME: "Outils de Laboratoire",
+		DESC: "",
+	},
+	STOR0: {
+		NAME: "Logistique",
+		DESC: "Un réseau logistique performant est le pilier d'une ville. Améliorez la capacité de vos équipes logistiques à acheminer les marchandises rapidement et libérez ainsi de la main-d'œuvre pour d'autres tâches. Ceci s'applique aux entrepôts, aux transporteurs, aux dépôts et aux gares.",
+	},
+	STOR1: {
+		NAME: "Transports",
+		DESC: "De lourds chariots font trembler la rue en descendent la rue, accompagnés des gémissements des bêtes de somme.",
+	},
+	PROX0: {
+		NAME: "Caravanes",
+		DESC: "L'innovation des caravanes longue distance nous permet de réduire les péages.",
+	},
+	MISC3: {
+		NAME: "Décomposition",
+		DESC: "Chaque année, tant de biens sont perdus à cause du pourrissement et de la rouille. Votre peuple apprend à mieux stocker les marchandises et à conserver les aliments plus longtemps.",
+	},
+	MAIN0: {
+		NAME: "Entretien",
+		DESC: "Vos constructeurs apprennent les secrets pour que les constructions résistent à l'épreuve du temps.",
+	},
+	UNI00: {
+		NAME: "University",
+		DESC: "Unlocks the university where subjects can enlighten themselves.",
+	},
+	UNI01: {
+		NAME: "Université",
+		DESC: "Débloque l'université où les sujets peuvent s'éclairer eux-mêmes.",
+	},
+	UNI02: {
+		NAME: "Savants",
+		DESC: "Augmente la vitesse d'apprentissage et permet une compréhension plus approfondie",
+	},
+	UNI03: {
+		NAME: "Universitaire",
+		DESC: "Augmente la vitesse d'apprentissage et permet une compréhension plus approfondie",
+	},
+	SCH00: {
+		NAME: "School",
+		DESC: "Allows us to educate our children in a school",
+	},
+	SCH01: {
+		NAME: "Improved Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH02: {
+		NAME: "Advanced Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH03: {
+		NAME: "Advanced Schooling",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	BANK0: {
+		NAME: "Banque",
+		DESC: "Etablit l'acces a l'epargne et aux emprunts.",
+	},
+	BANK1: {
+		NAME: "Pratiques bancaires",
+		DESC: "Ameliore les rendements d'epargne et reduit les taux d'emprunt ainsi que les penalites de retard.",
+	},
+},

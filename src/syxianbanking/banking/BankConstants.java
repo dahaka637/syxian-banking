@@ -53,6 +53,16 @@ public final class BankConstants {
     public static final double LOAN_DISPERSION_WEIGHT    = 0.35; // economic inequality raises loan rate
     public static final double SAVINGS_STRENGTH_DISCOUNT = 0.10; // positive strength lowers savings rate
 
+    // ---- Banking technology ----
+    // ADMIN_BANK1 has 10 levels. Effects are multiplicative so the technology remains useful
+    // without turning low-risk loans into free money in mature economies.
+    public static final int    BANKING_TECH_MAX_LEVEL = 10;
+    public static final double BANKING_TECH_SAVINGS_RATE_BONUS_PER_LEVEL = 0.05;  // +50% max
+    public static final double BANKING_TECH_LOAN_RATE_DISCOUNT_PER_LEVEL = 0.035; // -35% max
+    public static final double BANKING_TECH_PENALTY_RATE_DISCOUNT_PER_LEVEL = 0.04; // -40% max
+    public static final double BANKING_TECH_MIN_LOAN_RATE_FACTOR = 0.50;
+    public static final double BANKING_TECH_MIN_PENALTY_RATE_FACTOR = 0.50;
+
     // ---- Credit capacity formula ----
     // creditRatio: fraction of the player's credit base available as new credit.
     // Savings act as collateral; active debt has a small extra burden to discourage chaining loans.

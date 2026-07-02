@@ -1,0 +1,164 @@
+_JSON_ADD: true,
+NAME: "Administracja",
+TECHS: {
+	EMBA0: {
+		NAME: "Ambasada",
+		DESC: "Unlocks a place that lets us improve relations with other factions and manipulate their courts.",
+	},
+	ADMI0: {
+		NAME: "Paper Filing",
+		DESC: "Restrukturyzuje naszą administrację i czyni ją bardziej wydajną.",
+	},
+	ADMIT: {
+		NAME: "Narzędzia administracyjne",
+		DESC: "",
+	},
+	DEFL0: {
+		NAME: "Księgowość",
+		DESC: "Pozwala nam zahamować inflację i utrzymać nasze zgromadzone bogactwo na dobrym poziomie.",
+	},
+	DIP01: {
+		NAME: "Szkoła Charyzmy",
+		DESC: "Edukuje naszych dyplomatów w sztuce charyzmy, co sprawia, że są bardziej efektywni w swoich zadaniach.",
+	},
+	IMMI0: {
+		NAME: "Reklama",
+		DESC: "Lets our good reputation spread farther, attracting more people to our beautiful city.",
+	},
+	LAW00: {
+		NAME: "Więzienia",
+		DESC: "Lets us build prisons that can be used to punish criminals.",
+	},
+	LAW01: {
+		NAME: "Egzekucje",
+		DESC: "Pozwala nam budować place egzekucji, aby zrobić przykład ze zbrodniarzy.",
+	},
+	LAW02: {
+		NAME: "Dyby",
+		DESC: "Może być użyty jako dodatek do innych kar, aby poniżyć i odstraszyć przestępców.",
+	},
+	LAW03: {
+		NAME: "Tajna Policja",
+		DESC: "Puts some thought into our current legal system and improves its efficiency.",
+	},
+	LAW04: {
+		NAME: "Sprawiedliwość",
+		DESC: "Udoskonala nasz system sprawiedliwości i pozwala na przeprowadzanie rozpraw sądowych złapanych przestępców.",
+	},
+	LAW05: {
+		NAME: "Tajna Policja",
+		DESC: "Wprowadza przemyślane zmiany w naszym systemie prawnym i poprawia jego efektywność.",
+	},
+	LAW06: {
+		NAME: "Strażnicy",
+		DESC: "Unlocks the guard post that will help us catch criminals.",
+	},
+	OPIN0: {
+		NAME: "Propaganda",
+		DESC: "Makes sure our reputation reaches foreign rulers intact. In other words, increases their opinions of you.",
+	},
+	SAFE0: {
+		NAME: "Bezpieczeństwo Pracy",
+		DESC: "Pozwala nam opracować procedury, które ograniczą liczbę wypadków.",
+	},
+	EDUC0: {
+		NAME: "Edukacja",
+		DESC: "Napełniaj podatne młode umysły wiedzą potrzebną do wysoko wykwalifikowanej pracy lub indoktrynuj je, aby pozostały bardziej lojalne w trudnych czasach.",
+	},
+	EDUC1: {
+		NAME: "Uniwersytet",
+		DESC: "Kształć dorosłych, aby lepiej radzili sobie w zawodach wymagających wysokich kwalifikacji lub indoktrynuj ich, aby byli bardziej lojalni w trudnych czasach.",
+	},
+	EDUC2: {
+		NAME: "Uczeni",
+		DESC: "Makes education and learning a trend and boosts knowledge in general.",
+	},
+	LAB00: {
+		NAME: "Ulepszone Laboratorium",
+		DESC: "Chaotic tinkering has given way to more measured experimentation.  Supply your scientists with a cleaner work environment to continue their progress.",
+	},
+	LAB01: {
+		NAME: "Zaawansowane Laboratorium",
+		DESC: "Eksperymenty doprowadziły do formalnych metod i zaawansowanej teorii. Twoje laboratoria potrzebują teraz bardziej precyzyjnych instrumentów, by dokonywać nowych odkryć.",
+	},
+	LABTT: {
+		NAME: "Narzędzia Laboratoryjne",
+		DESC: "",
+	},
+	LIB00: {
+		NAME: "Biblioteka",
+		DESC: "A lifetime of study cannot encompass all the discoveries of your people.  Librarians toil to assist your Laboratories by preserving existing knowledge.  Their work is impossible without a consistent supply of precious vellum leather.",
+	},
+	LIB01: {
+		NAME: "Zaawansowana Biblioteka",
+		DESC: "Rzędy starannie poukładanych i skatalogowanych tekstów dających łatwy dostęp do wiedzy sprawiły, że biblioteki stały się centralnym narzędziem specjalizacji naszych naukowców.",
+	},
+	PAPER: {
+		NAME: "Paper Handling",
+		DESC: "Zaawansowane odkrycia na temat papieru jako materiału pozwalają nam używać go mniej w naszym przemyśle.",
+	},
+	LABT: {
+		NAME: "Narzędzia Laboratoryjne",
+		DESC: "",
+	},
+	STOR0: {
+		NAME: "Logistyka",
+		DESC: "A solid logistics network is the pumping heart of a city.  Improve the ability of your logistics workers to move goods quickly, freeing up labor for other tasks. Applies to warehouses, haulers, depots, and stations.",
+	},
+	STOR1: {
+		NAME: "Transports",
+		DESC: "Heavy wagons rumble down the street to the groan of beasts of burden.",
+	},
+	PROX0: {
+		NAME: "Karawany",
+		DESC: "Najnowsze innowacje wprowadzone do długodystansowych karawan zmniejszają opłaty handlowe.",
+	},
+	MISC3: {
+		NAME: "Spoilage",
+		DESC: "So much is wasted every year on rot and rust.  Your people learn how to properly store goods and preserve foods for longer periods of time.",
+	},
+	MAIN0: {
+		NAME: "Konserwacja",
+		DESC: "Your builders learn the secrets of making constructions survive the test of time.",
+	},
+	UNI00: {
+		NAME: "University",
+		DESC: "Unlocks the university where subjects can enlighten themselves.",
+	},
+	UNI01: {
+		NAME: "Uniwersytet",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	UNI02: {
+		NAME: "Uczeni",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	UNI03: {
+		NAME: "Royal Academia",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	SCH00: {
+		NAME: "School",
+		DESC: "Allows us to educate our children in a school",
+	},
+	SCH01: {
+		NAME: "Improved Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH02: {
+		NAME: "Advanced Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH03: {
+		NAME: "Advanced Schooling",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	BANK0: {
+		NAME: "Bankowosc",
+		DESC: "Zapewnia dostep do oszczednosci i pozyczek.",
+	},
+	BANK1: {
+		NAME: "Praktyki bankowe",
+		DESC: "Poprawia zyski z oszczednosci oraz obniza oprocentowanie pozyczek i kary za opoznienie.",
+	},
+},

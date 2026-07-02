@@ -19,6 +19,8 @@ import snake2d.util.gui.renderable.RENDEROBJ;
 import snake2d.util.sets.LIST;
 import syxianbanking.banking.BankSerializer;
 import syxianbanking.banking.BankState;
+import syxianbanking.banking.BankTech;
+import syxianbanking.ui.BankLockedView;
 import syxianbanking.ui.BankingView;
 import util.gui.misc.GButt;
 import view.main.VIEW;
@@ -63,6 +65,7 @@ public final class SyxianBanking implements SCRIPT {
     @Override
     public SCRIPT_INSTANCE createInstance() {
         BankState.INSTANCE.resetForNewContext();
+        BankTech.installVisualEffects();
         return new Instance();
     }
 
@@ -73,10 +76,12 @@ public final class SyxianBanking implements SCRIPT {
         // Tracks the manager where the button was installed to avoid reinstalling every frame.
         private static IManager    installedManager;
         private static BankingView bankingView;
+        private static BankLockedView bankLockedView;
         private static boolean     inflationSuppressed = false;
 
         @Override
         public void update(double ds) {
+            BankTech.installVisualEffects();
             install();
             suppressInflation();
             BankState.INSTANCE.updateIfNeeded();
@@ -103,14 +108,26 @@ public final class SyxianBanking implements SCRIPT {
         private static void install() {
             try {
                 IManager manager = VIEW.UI().manager;
-                if (manager == null || installedManager == manager) return;
+                if (manager == null) return;
+                if (installedManager == manager) {
+                    if (BankTech.unlocked() && bankLockedView != null && bankingView != null
+                            && isCurrent(manager, bankLockedView)) {
+                        manager.show(bankingView);
+                    }
+                    return;
+                }
 
                 bankingView = new BankingView();
+                bankLockedView = new BankLockedView();
                 GuiSection top = getTop(manager);
 
                 GButt.ButtPanel button = new GButt.ButtPanel(bankingView.icon) {
-                    @Override protected void clickA()    { manager.show(bankingView); }
-                    @Override protected void renAction() { selectedSet(isCurrent(manager, bankingView)); }
+                    @Override protected void clickA() {
+                        manager.show(BankTech.unlocked() ? bankingView : bankLockedView);
+                    }
+                    @Override protected void renAction() {
+                        selectedSet(isCurrent(manager, bankingView) || isCurrent(manager, bankLockedView));
+                    }
                 };
                 button.hoverInfoSet(bankingView.title);
                 button.pad(16, 2);

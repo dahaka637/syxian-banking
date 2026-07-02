@@ -29,14 +29,14 @@ public final class BankingView extends IFullView {
     private final CLICKABLE.ClickSwitch switcher = new CLICKABLE.ClickSwitch(savings);
 
     public BankingView() {
-        super("Syxian Banking", universityIcon());
+        super("Syxian Banking", bankIcon());
         section.body().setWidth(WIDTH).setHeight(1);
         switcher.setD(DIR.N);
         section.addRelBody(8,  DIR.S, picker());
         section.addRelBody(16, DIR.S, switcher);
     }
 
-    private static Icon universityIcon() {
+    static Icon bankIcon() {
         try {
             return SETT.ROOMS().UNIVERSITIES.get(0).icon;
         } catch (Exception e) {

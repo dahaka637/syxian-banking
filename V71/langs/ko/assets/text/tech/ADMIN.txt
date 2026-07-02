@@ -1,0 +1,164 @@
+_JSON_ADD: true,
+NAME: "Administration",
+TECHS: {
+	EMBA0: {
+		NAME: "Embassy",
+		DESC: "Unlocks a place that lets us improve relations with other factions and manipulate their courts.",
+	},
+	ADMI0: {
+		NAME: "Paper Filing",
+		DESC: "Restructures our administrative work and makes it more efficient.",
+	},
+	ADMIT: {
+		NAME: "Admin tools",
+		DESC: "",
+	},
+	DEFL0: {
+		NAME: "Accounting",
+		DESC: "Allows us to put brakes on inflation and keep our stored credit at good levels.",
+	},
+	DIP01: {
+		NAME: "School of Charm",
+		DESC: "Educates our diplomats in the art of charisma, making them more efficient on assignments.",
+	},
+	IMMI0: {
+		NAME: "Advertisement",
+		DESC: "Lets our good reputation spread farther, attracting more people to our beautiful city.",
+	},
+	LAW00: {
+		NAME: "Prisons",
+		DESC: "Lets us build prisons that can be used to punish criminals.",
+	},
+	LAW01: {
+		NAME: "Execution",
+		DESC: "Lets us build execution squares to make an example out of criminals.",
+	},
+	LAW02: {
+		NAME: "Stocks",
+		DESC: "Can be used as a compliment to other punishments to shame and deter criminals.",
+	},
+	LAW03: {
+		NAME: "Secret police",
+		DESC: "Puts some thought into our current legal system and improves its efficiency.",
+	},
+	LAW04: {
+		NAME: "Justice",
+		DESC: "Refines our justice system and allows us to hold trials for caught criminals.",
+	},
+	LAW05: {
+		NAME: "Secret police",
+		DESC: "Puts some thought into our current legal system and improves its efficiency.",
+	},
+	LAW06: {
+		NAME: "Guards",
+		DESC: "Unlocks the guard post that will help us catch criminals.",
+	},
+	OPIN0: {
+		NAME: "Propaganda",
+		DESC: "Makes sure our reputation reaches foreign rulers intact. In other words, increases their opinions of you.",
+	},
+	SAFE0: {
+		NAME: "Work Safety",
+		DESC: "Lets us draft up some protocols that will keep accidents at bay.",
+	},
+	EDUC0: {
+		NAME: "Schooling",
+		DESC: "Fill impressionable young minds with knowledge for high education work, or indoctrinate them to be loyal through tough times.",
+	},
+	EDUC1: {
+		NAME: "University",
+		DESC: "Educate adults to perform well in very high intellect work, or indoctrinate them to be more loyal through the harshest of times.",
+	},
+	EDUC2: {
+		NAME: "Scholars",
+		DESC: "Makes education and learning a trend and boosts knowledge in general.",
+	},
+	LAB00: {
+		NAME: "Improved Laboratory",
+		DESC: "Chaotic tinkering has given way to more measured experimentation.  Supply your scientists with a cleaner work environment to continue their progress.",
+	},
+	LAB01: {
+		NAME: "Advanced Laboratory",
+		DESC: "Experimentation has led toward formal methods and advanced theory.  Your laboratories now need more precise instruments to break into new discoveries.",
+	},
+	LABTT: {
+		NAME: "Laboratory Tools",
+		DESC: "",
+	},
+	LIB00: {
+		NAME: "Library",
+		DESC: "A lifetime of study cannot encompass all the discoveries of your people.  Librarians toil to assist your Laboratories by preserving existing knowledge.  Their work is impossible without a consistent supply of precious vellum leather.",
+	},
+	LIB01: {
+		NAME: "Advanced Library",
+		DESC: "Rows of neatly organized texts indexed for easy reference have made libraries a powerful tool of specialization for your scientists.",
+	},
+	PAPER: {
+		NAME: "Paper Handling",
+		DESC: "Improved discoveries about paper itself as a material enables us to use less of it in our industries.",
+	},
+	LABT: {
+		NAME: "Laboratory Tools",
+		DESC: "",
+	},
+	STOR0: {
+		NAME: "Logistics",
+		DESC: "A solid logistics network is the pumping heart of a city.  Improve the ability of your logistics workers to move goods quickly, freeing up labor for other tasks. Applies to warehouses, haulers, depots, and stations.",
+	},
+	STOR1: {
+		NAME: "Transports",
+		DESC: "Heavy wagons rumble down the street to the groan of beasts of burden.",
+	},
+	PROX0: {
+		NAME: "Caravans",
+		DESC: "Innovation in long distance caravans enables us to trade for less toll.",
+	},
+	MISC3: {
+		NAME: "Spoilage",
+		DESC: "So much is wasted every year on rot and rust.  Your people learn how to properly store goods and preserve foods for longer periods of time.",
+	},
+	MAIN0: {
+		NAME: "Maintenance",
+		DESC: "Your builders learn the secrets of making constructions survive the test of time.",
+	},
+	UNI00: {
+		NAME: "University",
+		DESC: "Unlocks the university where subjects can enlighten themselves.",
+	},
+	UNI01: {
+		NAME: "Scholars",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	UNI02: {
+		NAME: "Academia",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	UNI03: {
+		NAME: "Royal Academia",
+		DESC: "Increases learning speed and allows for deeper enlightenment",
+	},
+	SCH00: {
+		NAME: "School",
+		DESC: "Allows us to educate our children in a school",
+	},
+	SCH01: {
+		NAME: "Improved Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH02: {
+		NAME: "Advanced Curriculum",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	SCH03: {
+		NAME: "Advanced Schooling",
+		DESC: "Increases learning rates of schools and unlocks further education.",
+	},
+	BANK0: {
+		NAME: "은행업",
+		DESC: "저축과 대출 이용을 가능하게 합니다.",
+	},
+	BANK1: {
+		NAME: "은행 관행",
+		DESC: "저축 수익을 높이고 대출 금리와 연체 벌금을 낮춥니다.",
+	},
+},

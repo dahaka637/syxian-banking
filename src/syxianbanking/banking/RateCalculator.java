@@ -35,6 +35,7 @@ public final class RateCalculator {
     public double targetSavingsRate;  // target computed today; current converges towards it
     public double targetLoanRate;
     public boolean initialized;       // false only before the first calculated day
+    private int appliedBankTechLevel = -1; // last tech level reflected in the current displayed rates
 
     // ---- Economic snapshot (rebuilt every game day) ----
     public int    kingdoms;
@@ -55,6 +56,7 @@ public final class RateCalculator {
         targetSavingsRate  = 0;
         targetLoanRate     = 0;
         initialized        = false;
+        appliedBankTechLevel = -1;
         error              = null;
         resetSnapshot();
     }
@@ -109,26 +111,31 @@ public final class RateCalculator {
         negativeStress     /= totalEconomicWeight;
         positiveStrength   /= totalEconomicWeight;
 
-        // Compute target rates from the economic snapshot.
-        targetSavingsRate = Sanitize.rate(
+        // Compute market target rates from the economic snapshot, then apply banking tech.
+        double marketSavingsTarget = Sanitize.rate(
                 BankConstants.SAVINGS_BASE_RATE
                 + negativeStress    * BankConstants.SAVINGS_STRESS_WEIGHT
                 + economicDispersion * BankConstants.SAVINGS_DISPERSION_WEIGHT
                 - positiveStrength  * BankConstants.SAVINGS_STRENGTH_DISCOUNT,
                 BankConstants.MAX_SAVINGS_RATE);
 
-        targetLoanRate = Sanitize.rate(
-                targetSavingsRate + BankConstants.LOAN_BASE_SPREAD
+        double marketLoanTarget = Sanitize.rate(
+                marketSavingsTarget + BankConstants.LOAN_BASE_SPREAD
                 + negativeStress    * BankConstants.LOAN_STRESS_WEIGHT
                 + economicDispersion * BankConstants.LOAN_DISPERSION_WEIGHT,
                 BankConstants.MAX_BASE_LOAN_RATE);
 
+        int bankTechLevel = BankTech.levelForRates();
+        targetSavingsRate = BankTech.applySavingsRate(marketSavingsTarget, bankTechLevel);
+        targetLoanRate    = BankTech.applyLoanRate(marketLoanTarget, bankTechLevel);
+
         // On the first day, snap directly to target (no smoothing).
-        // Afterwards, converge exponentially toward the target each day.
-        if (!initialized) {
+        // Tech level changes also snap so researched banking practices are visible immediately.
+        if (!initialized || appliedBankTechLevel != bankTechLevel) {
             currentSavingsRate = targetSavingsRate;
             currentLoanRate    = targetLoanRate;
             initialized = true;
+            appliedBankTechLevel = bankTechLevel;
         } else {
             currentSavingsRate += (targetSavingsRate - currentSavingsRate) * BankConstants.SAVINGS_ADJUSTMENT_SPEED;
             currentLoanRate    += (targetLoanRate    - currentLoanRate)    * BankConstants.LOAN_ADJUSTMENT_SPEED;
@@ -145,12 +152,36 @@ public final class RateCalculator {
      * Called once per day before processing loan installments.
      */
     public double contractedPenaltyRate() {
-        return Sanitize.rate(
+        double marketPenaltyRate = Sanitize.rate(
                 BankConstants.LATE_PENALTY_BASE
                 + currentLoanRate    * BankConstants.LATE_PENALTY_RATE_WEIGHT
                 + negativeStress     * BankConstants.LATE_PENALTY_STRESS_WEIGHT
                 + economicDispersion * BankConstants.LATE_PENALTY_DISPERSION_WEIGHT,
                 BankConstants.MAX_DAILY_PENALTY_RATE);
+        return BankTech.applyPenaltyRate(marketPenaltyRate);
+    }
+
+    boolean refreshBankTechAdjustmentIfNeeded() {
+        if (!initialized) return false;
+
+        int bankTechLevel = BankTech.levelForRates();
+        if (appliedBankTechLevel < 0) {
+            appliedBankTechLevel = bankTechLevel;
+            return false;
+        }
+        if (appliedBankTechLevel == bankTechLevel) return false;
+
+        double marketSavingsTarget = unapplyFactor(targetSavingsRate,
+                BankTech.savingsRateFactorForLevel(appliedBankTechLevel));
+        double marketLoanTarget = unapplyFactor(targetLoanRate,
+                BankTech.loanRateFactorForLevel(appliedBankTechLevel));
+
+        targetSavingsRate = BankTech.applySavingsRate(marketSavingsTarget, bankTechLevel);
+        targetLoanRate    = BankTech.applyLoanRate(marketLoanTarget, bankTechLevel);
+        currentSavingsRate = targetSavingsRate;
+        currentLoanRate    = targetLoanRate;
+        appliedBankTechLevel = bankTechLevel;
+        return true;
     }
 
     private void resetSnapshot() {
@@ -176,5 +207,10 @@ public final class RateCalculator {
         if (!Double.isFinite(wealthFactor)) return 1.0;
         double safe = Math.max(wealthFactor, 0.0);
         return Math.max(0.0, Math.log(safe + 1.0) / Math.log(2.0));
+    }
+
+    private double unapplyFactor(double adjustedRate, double factor) {
+        if (!Double.isFinite(factor) || factor <= 0) return adjustedRate;
+        return adjustedRate / factor;
     }
 }

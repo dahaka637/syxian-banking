@@ -58,6 +58,9 @@ public final class BankState {
     public void updateIfNeeded() {
         int currentDay = TIME.days().bitsSinceStart();
         if (currentDay == day) {
+            if (calculator.refreshBankTechAdjustmentIfNeeded()) {
+                loans.latePenaltyRate = calculator.contractedPenaltyRate();
+            }
             loans.syncSavingsCollateral(savings);
             loans.refreshCapacity();
             return;
