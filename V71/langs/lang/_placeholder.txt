@@ -1,0 +1,7 @@
+This folder works around a bug in the base game's init.paths.PATHS mod-loading code:
+when the active game language isn't English, it looks for a file/folder literally
+named "lang" directly inside V71/langs/ (instead of the actual language code), and
+crashes with "This resource could not be found" if it's missing.
+
+Filenames starting with "_" are ignored by the game's asset scanner, so this file
+is not read as game content; the folder only needs to exist.

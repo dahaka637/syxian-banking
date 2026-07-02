@@ -154,10 +154,10 @@ TECHS: {
 	},
 	BANK0: {
 		NAME: "Banking",
-		DESC: "Establishes a formal banking office, granting access to savings and loans.",
+		DESC: "Unlocks the bank, letting us store money in savings to earn interest, and take out loans.",
 	},
 	BANK1: {
 		NAME: "Banking Practices",
-		DESC: "Refines banking administration, improving savings returns while reducing loan rates and late-payment penalties.",
+		DESC: "Improves savings returns, and reduces loan interest rates and late-payment penalties.",
 	},
 },

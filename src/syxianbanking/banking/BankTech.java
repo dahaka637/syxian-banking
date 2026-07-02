@@ -1,16 +1,22 @@
 package syxianbanking.banking;
 
+import java.lang.reflect.Field;
+
 import game.boosting.BOOSTABLE_O;
 import game.boosting.BSourceInfo;
 import game.boosting.Boostable;
 import game.boosting.BoostableCat;
 import game.boosting.Booster;
 import game.faction.FACTIONS;
+import init.sprite.UI.Icon;
 import init.sprite.UI.UI;
 import init.tech.TECH;
 import init.tech.TECHS;
+import snake2d.SPRITE_RENDERER;
 import snake2d.util.misc.CLAMP;
+import snake2d.util.sprite.SPRITE;
 import syxianbanking.TR;
+import util.colors.GCOLOR;
 
 /**
  * Reads the optional Syxian Banking technologies from the vanilla tech system.
@@ -31,6 +37,7 @@ public final class BankTech {
     private static boolean unlockResolved;
     private static boolean ratesResolved;
     private static boolean visualBoostsInstalled;
+    private static boolean iconInstalled;
 
     private BankTech() {}
 
@@ -72,6 +79,38 @@ public final class BankTech {
             visualBoostsInstalled = true;
         } catch (Throwable ignored) {
             visualBoostsInstalled = false;
+        }
+        installIcon();
+    }
+
+    // Gives Banking Practices the same icon as Banking, with the "leveled tech" plus
+    // badge in the corner (the same treatment vanilla techs like Accounting get),
+    // instead of the auto-generated mosaic of the three effect icons.
+    private static void installIcon() {
+        if (iconInstalled) return;
+        try {
+            TECH unlock = bankUnlockTech();
+            TECH rates = bankRatesTech();
+            if (unlock == null || rates == null) return;
+
+            SPRITE base = unlock.icon();
+            SPRITE plus = UI.icons().s.plus2.scaled(2).createColored(GCOLOR.T().IGREAT);
+
+            SPRITE composed = new SPRITE.Imp(Icon.HUGE) {
+                @Override
+                public void render(SPRITE_RENDERER r, int X1, int X2, int Y1, int Y2) {
+                    base.renderC(r, X1 + (X2 - X1) / 2, Y1 + (Y2 - Y1) / 2);
+                    plus.render(r, X2 - plus.width() + 8, Y1 - 8);
+                }
+            };
+
+            Field iconField = TECH.class.getDeclaredField("icon");
+            iconField.setAccessible(true);
+            iconField.set(rates, composed);
+
+            iconInstalled = true;
+        } catch (Throwable ignored) {
+            iconInstalled = false;
         }
     }
 
